@@ -1,0 +1,545 @@
+
+{
+  "name": "Calculette Futuriste",
+  "short_name": "Calories",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#1a1a2e",
+  "background_color": "#1a1a2e",
+  "display": "standalone"
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calculateur de calories intelligent pour suivre vos besoins nutritionnels quotidiens">
+    <title>Calculette Futuriste - Suivi Calorique</title>
+    
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#1a1a2e">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap');
+        
+        :root {
+            --primary: #6e45e2;
+            --secondary: #88d3ce;
+            --accent: #ff7e5f;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        
+        .title-font {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(110, 69, 226, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(110, 69, 226, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(110, 69, 226, 0); }
+        }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background-image: linear-gradient(var(--primary), var(--primary));
+            background-size: 0% 100%;
+            background-repeat: no-repeat;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 2px 0 #555;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--accent);
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, rgba(110, 69, 226, 0.2) 0%, rgba(136, 211, 206, 0.2) 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="title-font text-4xl md:text-5xl font-bold mb-4 gradient-text">CALCULATEUR <span class="text-white">FUTURISTE</span></h1>
+            <p class="text-gray-300 max-w-lg mx-auto">Optimisez votre apport calorique avec notre technologie avancée de suivi nutritionnel.</p>
+        </header>
+        
+        <!-- Main Calculator -->
+        <div class="glass-card p-6 md:p-8 rounded-2xl mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Personal Info -->
+                <div>
+                    <h2 class="title-font text-xl font-semibold mb-6 flex items-center">
+                        <i class="fas fa-user-astronaut mr-3 text-purple-400"></i>
+                        <span>VOS DONNÉES</span>
+                    </h2>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Genre</label>
+                            <div class="flex space-x-4">
+                                <button id="maleBtn" class="gender-btn flex-1 py-2 px-4 rounded-lg bg-purple-600 text-white font-medium transition-all hover:bg-purple-700 active:scale-95">
+                                    <i class="fas fa-mars mr-2"></i> Homme
+                                </button>
+                                <button id="femaleBtn" class="gender-btn flex-1 py-2 px-4 rounded-lg bg-gray-700 text-gray-300 font-medium transition-all hover:bg-gray-600 active:scale-95">
+                                    <i class="fas fa-venus mr-2"></i> Femme
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="age" class="block text-sm font-medium text-gray-300 mb-2">Âge</label>
+                            <div class="flex items-center">
+                                <input type="range" id="age" min="15" max="80" value="30" class="w-full mr-4">
+                                <span id="ageValue" class="text-white font-bold w-12 text-center">30</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="height" class="block text-sm font-medium text-gray-300 mb-2">Taille (cm)</label>
+                            <div class="flex items-center">
+                                <input type="range" id="height" min="140" max="220" value="170" class="w-full mr-4">
+                                <span id="heightValue" class="text-white font-bold w-12 text-center">170</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="weight" class="block text-sm font-medium text-gray-300 mb-2">Poids (kg)</label>
+                            <div class="flex items-center">
+                                <input type="range" id="weight" min="40" max="150" value="70" class="w-full mr-4">
+                                <span id="weightValue" class="text-white font-bold w-12 text-center">70</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Activity Level -->
+                <div>
+                    <h2 class="title-font text-xl font-semibold mb-6 flex items-center">
+                        <i class="fas fa-running mr-3 text-blue-400"></i>
+                        <span>ACTIVITÉ PHYSIQUE</span>
+                    </h2>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label for="activity" class="block text-sm font-medium text-gray-300 mb-2">Niveau d'activité</label>
+                            <select id="activity" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                                <option value="1.2">Sédentaire (peu ou pas d'exercice)</option>
+                                <option value="1.375">Légèrement actif (1-3 jours/semaine)</option>
+                                <option value="1.55">Modérément actif (3-5 jours/semaine)</option>
+                                <option value="1.725">Très actif (6-7 jours/semaine)</option>
+                                <option value="1.9">Extrêmement actif (sport professionnel)</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Objectif</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <button data-goal="lose" class="goal-btn py-2 px-2 rounded-lg bg-gray-800 text-gray-300 text-sm font-medium transition-all hover:bg-red-900 hover:text-white active:scale-95">
+                                    <i class="fas fa-fire text-red-400 mr-1"></i> Perdre
+                                </button>
+                                <button data-goal="maintain" class="goal-btn py-2 px-2 rounded-lg bg-purple-600 text-white text-sm font-medium transition-all hover:bg-purple-700 active:scale-95">
+                                    <i class="fas fa-balance-scale text-white mr-1"></i> Maintenir
+                                </button>
+                                <button data-goal="gain" class="goal-btn py-2 px-2 rounded-lg bg-gray-800 text-gray-300 text-sm font-medium transition-all hover:bg-green-900 hover:text-white active:scale-95">
+                                    <i class="fas fa-arrow-up text-green-400 mr-1"></i> Prendre
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4">
+                            <button id="calculateBtn" class="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white font-bold rounded-lg shadow-lg transition-all hover:from-purple-700 hover:to-blue-600 hover:shadow-xl active:scale-95 flex items-center justify-center pulse">
+                                <i class="fas fa-calculator mr-3"></i>
+                                CALCULER LES CALORIES
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden glass-card p-6 md:p-8 rounded-2xl">
+            <h2 class="title-font text-2xl font-semibold mb-6 text-center gradient-text">VOS RÉSULTATS</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                <div class="result-card p-5 rounded-xl">
+                    <div class="flex items-center mb-3">
+                        <div class="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center mr-4">
+                            <i class="fas fa-bolt text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-300">Métabolisme de base</h3>
+                            <p class="text-xs text-gray-400">Calories au repos</p>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-white" id="bmrResult">0</p>
+                        <p class="text-sm text-gray-400">kcal/jour</p>
+                    </div>
+                </div>
+                
+                <div class="result-card p-5 rounded-xl">
+                    <div class="flex items-center mb-3">
+                        <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center mr-4">
+                            <i class="fas fa-fire text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-300">Dépense énergétique</h3>
+                            <p class="text-xs text-gray-400">Avec activité</p>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-white" id="tdeeResult">0</p>
+                        <p class="text-sm text-gray-400">kcal/jour</p>
+                    </div>
+                </div>
+                
+                <div class="result-card p-5 rounded-xl">
+                    <div class="flex items-center mb-3">
+                        <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center mr-4">
+                            <i class="fas fa-bullseye text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-300">Objectif calorique</h3>
+                            <p class="text-xs text-gray-400">Recommandé</p>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-white" id="goalResult">0</p>
+                        <p class="text-sm text-gray-400">kcal/jour</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 bg-opacity-50 rounded-xl p-5">
+                <h3 class="font-semibold text-lg mb-3 flex items-center">
+                    <i class="fas fa-chart-line text-purple-400 mr-2"></i>
+                    Répartition des macronutriments
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-900 bg-opacity-50 p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-blue-400">Protéines</span>
+                            <span class="text-xs bg-blue-900 text-blue-100 px-2 py-1 rounded">30%</span>
+                        </div>
+                        <div class="h-2 bg-gray-700 rounded-full mb-2">
+                            <div class="h-2 bg-blue-500 rounded-full" style="width: 30%" id="proteinBar"></div>
+                        </div>
+                        <p class="text-white font-bold text-lg" id="proteinGrams">0g</p>
+                    </div>
+                    
+                    <div class="bg-gray-900 bg-opacity-50 p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-green-400">Glucides</span>
+                            <span class="text-xs bg-green-900 text-green-100 px-2 py-1 rounded">50%</span>
+                        </div>
+                        <div class="h-2 bg-gray-700 rounded-full mb-2">
+                            <div class="h-2 bg-green-500 rounded-full" style="width: 50%" id="carbsBar"></div>
+                        </div>
+                        <p class="text-white font-bold text-lg" id="carbsGrams">0g</p>
+                    </div>
+                    
+                    <div class="bg-gray-900 bg-opacity-50 p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-yellow-400">Lipides</span>
+                            <span class="text-xs bg-yellow-900 text-yellow-100 px-2 py-1 rounded">20%</span>
+                        </div>
+                        <div class="h-2 bg-gray-700 rounded-full mb-2">
+                            <div class="h-2 bg-yellow-500 rounded-full" style="width: 20%" id="fatsBar"></div>
+                        </div>
+                        <p class="text-white font-bold text-lg" id="fatsGrams">0g</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button id="resetBtn" class="px-6 py-2 bg-gray-700 text-gray-300 rounded-lg font-medium transition-all hover:bg-gray-600 active:scale-95">
+                    <i class="fas fa-redo mr-2"></i> Recommencer
+                </button>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center text-gray-400 text-sm mt-12 mb-6">
+            <p>© 2023 Calculette Futuriste - Tous droits réservés</p>
+            <p class="mt-2">Conçu avec <i class="fas fa-heart text-red-400"></i> pour votre santé</p>
+        </footer>
+
+        <!-- Floating Elements for Decoration -->
+        <div class="fixed -left-20 -bottom-20 w-64 h-64 rounded-full bg-purple-600 opacity-10 blur-3xl -z-10"></div>
+        <div class="fixed -right-20 top-1/3 w-64 h-64 rounded-full bg-blue-600 opacity-10 blur-3xl -z-10"></div>
+        <div class="fixed top-20 left-1/4 w-32 h-32 rounded-full bg-green-600 opacity-5 blur-xl -z-10 floating" style="animation-delay: 1s;"></div>
+        <div class="fixed bottom-1/4 right-1/3 w-24 h-24 rounded-full bg-pink-600 opacity-5 blur-xl -z-10 floating" style="animation-delay: 2s;"></div>
+    </div>
+    
+    <!-- Loader -->
+    <div id="loader" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50 transition-opacity duration-500">
+        <div class="text-center">
+            <div class="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-purple-400 font-medium">Chargement de l'application...</p>
+        </div>
+    </div>
+
+    <script>
+        // Hide loader when page is loaded
+        window.addEventListener('load', function() {
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+            }, 500);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const ageInput = document.getElementById('age');
+            const ageValue = document.getElementById('ageValue');
+            const heightInput = document.getElementById('height');
+            const heightValue = document.getElementById('heightValue');
+            const weightInput = document.getElementById('weight');
+            const weightValue = document.getElementById('weightValue');
+            const activitySelect = document.getElementById('activity');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const resultsSection = document.getElementById('resultsSection');
+            const bmrResult = document.getElementById('bmrResult');
+            const tdeeResult = document.getElementById('tdeeResult');
+            const goalResult = document.getElementById('goalResult');
+            const proteinGrams = document.getElementById('proteinGrams');
+            const carbsGrams = document.getElementById('carbsGrams');
+            const fatsGrams = document.getElementById('fatsGrams');
+            const genderBtns = document.querySelectorAll('.gender-btn');
+            const goalBtns = document.querySelectorAll('.goal-btn');
+            
+            // Variables
+            let gender = 'male';
+            let goal = 'maintain';
+            
+            // Event Listeners
+            ageInput.addEventListener('input', () => {
+                ageValue.textContent = ageInput.value;
+            });
+            
+            heightInput.addEventListener('input', () => {
+                heightValue.textContent = heightInput.value;
+            });
+            
+            weightInput.addEventListener('input', () => {
+                weightValue.textContent = weightInput.value;
+            });
+            
+            genderBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    genderBtns.forEach(b => b.classList.remove('bg-purple-600', 'text-white', 'hover:bg-purple-700'));
+                    genderBtns.forEach(b => b.classList.add('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600'));
+                    
+                    this.classList.remove('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
+                    this.classList.add('bg-purple-600', 'text-white', 'hover:bg-purple-700');
+                    
+                    gender = this.id.replace('Btn', '');
+                });
+            });
+            
+            goalBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    goalBtns.forEach(b => b.classList.remove('bg-purple-600', 'text-white', 'hover:bg-purple-700'));
+                    goalBtns.forEach(b => b.classList.add('bg-gray-800', 'text-gray-300', 'hover:bg-gray-700'));
+                    
+                    this.classList.remove('bg-gray-800', 'text-gray-300', 'hover:bg-gray-700');
+                    this.classList.add('bg-purple-600', 'text-white', 'hover:bg-purple-700');
+                    
+                    goal = this.dataset.goal;
+                });
+            });
+            
+            calculateBtn.addEventListener('click', calculateCalories);
+            resetBtn.addEventListener('click', resetCalculator);
+            
+            // Functions
+            function calculateCalories() {
+                // Basic validation
+                if(!ageInput.value || !heightInput.value || !weightInput.value) {
+                    alert("Veuillez remplir tous les champs");
+                    return;
+                }
+
+                const age = parseInt(ageInput.value);
+                if(age < 15 || age > 80) {
+                    alert("L'âge doit être compris entre 15 et 80 ans");
+                    return;
+                }
+                const height = parseInt(heightInput.value);
+                const weight = parseInt(weightInput.value);
+                const activityLevel = parseFloat(activitySelect.value);
+                
+                // Calculate BMR (Basal Metabolic Rate)
+                let bmr;
+                if (gender === 'male') {
+                    bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+                } else {
+                    bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+                }
+                
+                // Calculate TDEE (Total Daily Energy Expenditure)
+                const tdee = bmr * activityLevel;
+                
+                // Calculate Goal Calories
+                let goalCalories;
+                switch(goal) {
+                    case 'lose':
+                        goalCalories = tdee - 500; // Deficit for weight loss
+                        break;
+                    case 'gain':
+                        goalCalories = tdee + 500; // Surplus for weight gain
+                        break;
+                    default:
+                        goalCalories = tdee; // Maintain weight
+                }
+                
+                // Calculate Macronutrients (30% protein, 50% carbs, 20% fats)
+                const proteinCalories = goalCalories * 0.3;
+                const carbsCalories = goalCalories * 0.5;
+                const fatsCalories = goalCalories * 0.2;
+                
+                const protein = Math.round(proteinCalories / 4); // 4 calories per gram
+                const carbs = Math.round(carbsCalories / 4);    // 4 calories per gram
+                const fats = Math.round(fatsCalories / 9);       // 9 calories per gram
+                
+                // Display Results
+                bmrResult.textContent = Math.round(bmr);
+                tdeeResult.textContent = Math.round(tdee);
+                goalResult.textContent = Math.round(goalCalories);
+                proteinGrams.textContent = protein + 'g';
+                carbsGrams.textContent = carbs + 'g';
+                fatsGrams.textContent = fats + 'g';
+                
+                // Animate the bars
+                animateValue(bmrResult, 0, Math.round(bmr), 1000);
+                animateValue(tdeeResult, 0, Math.round(tdee), 1000);
+                animateValue(goalResult, 0, Math.round(goalCalories), 1000);
+                
+                // Show results section
+                resultsSection.classList.remove('hidden');
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function animateValue(element, start, end, duration) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    element.textContent = Math.floor(progress * (end - start) + start);
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+            
+            function resetCalculator() {
+                ageInput.value = 30;
+                ageValue.textContent = '30';
+                heightInput.value = 170;
+                heightValue.textContent = '170';
+                weightInput.value = 70;
+                weightValue.textContent = '70';
+                activitySelect.value = '1.2';
+                
+                // Reset gender to male
+                document.getElementById('maleBtn').classList.remove('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
+                document.getElementById('maleBtn').classList.add('bg-purple-600', 'text-white', 'hover:bg-purple-700');
+                document.getElementById('femaleBtn').classList.remove('bg-purple-600', 'text-white', 'hover:bg-purple-700');
+                document.getElementById('femaleBtn').classList.add('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
+                gender = 'male';
+                
+                // Reset goal to maintain
+                goalBtns.forEach(b => b.classList.remove('bg-purple-600', 'text-white', 'hover:bg-purple-700'));
+                goalBtns.forEach(b => b.classList.add('bg-gray-800', 'text-gray-300', 'hover:bg-gray-700'));
+                document.querySelector('[data-goal="maintain"]').classList.remove('bg-gray-800', 'text-gray-300', 'hover:bg-gray-700');
+                document.querySelector('[data-goal="maintain"]').classList.add('bg-purple-600', 'text-white', 'hover:bg-purple-700');
+                goal = 'maintain';
+                
+                // Hide results
+                resultsSection.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
