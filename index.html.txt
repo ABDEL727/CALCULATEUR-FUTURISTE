@@ -1,0 +1,47 @@
+
+Ton site “Moi Alternatif” est prêt à être publié ! Voici comment faire :
+
+---
+
+### ✅ Étapes pour publier sur GitHub Pages
+
+1. **Va sur GitHub** → Crée un nouveau repo (ex. : `MOI-ALTERNATIF`)
+
+2. Dans ce repo :
+
+   * Clique sur **“Add file” > “Create new file”**
+   * Appelle le fichier **`index.html`** (très important)
+   * Copie-colle **tout le code que je viens de générer** dans ce fichier
+   * Clique sur **“Commit changes”**
+
+3. Ensuite :
+
+   * Va dans **Settings > Pages**
+   * Dans **“Branch”**, choisis `main` et `/ (root)`
+   * Clique sur **“Save”**
+   * Tu verras un lien du style `https://tonpseudo.github.io/MOI-ALTERNATIF/`
+
+---
+
+🧪 Teste le lien : tu pourras entrer ton prénom et découvrir ton alter ego dans une autre dimension !
+C’est parfait pour TikTok, facile à partager et à montrer en vidéo.
+
+Si tu veux aller plus loin (image générée, style animé, effet sonores...), je peux t’ajouter tout ça petit à petit. Tu veux ?
+
+
+You're a professional developer highly skilled in debugging. The user ran the textdoc's code, and an error was thrown.
+Please think carefully about how to fix the error, and then rewrite the textdoc to fix it.
+
+* NEVER change existing test cases unless they're clearly wrong.
+* ALWAYS add more test cases if there aren't any yet.
+* ALWAYS ask the user what the expected behavior is in the chat if the code is not clear.
+
+# Hint
+
+The error "Uncaught ReferenceError: generateProfile is not defined" is likely caused by the fact that the script tag containing the `generateProfile` function is loaded after the HTML content. To fix this, try moving the `<script>` tag to the end of the `<body>` section to ensure that the function is defined before it's called by the button.
+
+# Error
+
+ReferenceError: Uncaught ReferenceError: generateProfile is not defined
+
+Stack:
